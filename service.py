@@ -205,11 +205,11 @@ def normalizeString(str):
 # Sometimes search fail because Addic7ed uses URLs that does not match the TheTVDB format.
 # This will probably grow to be a hardcoded colleciton over time. 
 def addic7ize(str):
-  return {
-    'Kitchen Nightmares US': 'Kitchen Nightmares',
-    'Cosmos A Space Time Odyssey': 'Cosmos: A Space-Time Odyssey',
-    'Greys Anatomy': 'Grey\'s Anatomy',
-  }.get(str, str)
+  
+  addic7ize_dict = eval(open(__cwd__ + '/addic7ed_dict.txt').read())
+  
+  return addic7ize_dict.get(str, str)
+  
 
 def get_params():
   param = {}
