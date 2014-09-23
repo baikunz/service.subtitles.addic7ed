@@ -36,11 +36,12 @@ from Addic7edUtilities import log, get_language_info
 
 self_host = "http://www.addic7ed.com"
 self_release_pattern = re.compile("Version (.+), ([0-9]+).([0-9])+ MBs")
-    
-def get_url(url):
-  req_headers = {
+
+req_headers = {
   'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.13 (KHTML, like Gecko) Chrome/0.A.B.C Safari/525.13',
   'Referer': 'http://www.addic7ed.com'}
+    
+def get_url(url):
   request = urllib2.Request(url, headers=req_headers)
   opener = urllib2.build_opener()
   response = opener.open(request)
@@ -77,7 +78,7 @@ def query_Film(name, year, langs, file_original_path):
 def query(searchurl, langs, file_original_path, filename_string):
   sublinks = []
   socket.setdefaulttimeout(3)
-  request = urllib2.Request(searchurl)
+  request = urllib2.Request(searchurl, headers=req_headers)
   request.add_header('Pragma', 'no-cache')
   page = urllib2.build_opener().open(request)
   content = page.read()
