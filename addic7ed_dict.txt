@@ -2,4 +2,6 @@
 'Cosmos A Space Time Odyssey': 'Cosmos: A Space-Time Odyssey',
 'Greys Anatomy': 'Grey\'s Anatomy',
 'Shameless': 'Shameless (US)',
-'The Americans (2013)': 'The Americans'}
+'The Americans (2013)': 'The Americans',
+'Once Upon a Time (2011)': 'Once Upon a Time',
+'Castle (2009)': 'Castle'}
