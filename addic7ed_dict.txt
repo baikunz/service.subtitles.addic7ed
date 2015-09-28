@@ -6,4 +6,5 @@
 'Once Upon a Time (2011)': 'Once Upon a Time',
 'Castle (2009)': 'Castle',
 'Marvel\'s Daredevil': 'Daredevil',
-'House of Cards (US)': 'House of Cards (2013)'}
+'House of Cards (US)': 'House of Cards (2013)',
+'Scandal (2012)': 'Scandal'}
