@@ -77,7 +77,7 @@ def query_Film(name, year, langs, file_original_path):
 
 def query(searchurl, langs, file_original_path, filename_string):
   sublinks = []
-  socket.setdefaulttimeout(3)
+  socket.setdefaulttimeout(10)
   request = urllib2.Request(searchurl, headers=req_headers)
   request.add_header('Pragma', 'no-cache')
   page = urllib2.build_opener().open(request)
