@@ -7,4 +7,5 @@
 'Castle (2009)': 'Castle',
 'Marvel\'s Daredevil': 'Daredevil',
 'House of Cards (US)': 'House of Cards (2013)',
-'Scandal (2012)': 'Scandal'}
+'Scandal (2012)': 'Scandal',
+'American Dad!': 'American Dad'}
