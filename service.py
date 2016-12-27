@@ -85,7 +85,8 @@ def query(searchurl, langs, file_original_path, filename_string):
   content = content.replace("The safer, easier way", "The safer, easier way \" />")
   soup = BeautifulSoup(content)
 
-  file_name = str(os.path.basename(file_original_path)).split("-")[-1].lower()
+  file_original_path_clean = normalizeString(file_original_path.encode('utf-8'))
+  file_name = str(os.path.basename(file_original_path_clean)).split("-")[-1].lower()
 
   for langs_html in soup("td", {"class" : "language"}):
 
