@@ -8,4 +8,5 @@
 'Marvel\'s Daredevil': 'Daredevil',
 'House of Cards (US)': 'House of Cards (2013)',
 'Scandal (2012)': 'Scandal',
+'Frontier (2016)': 'Frontier',
 'American Dad!': 'American Dad'}
