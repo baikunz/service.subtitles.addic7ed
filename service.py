@@ -16,6 +16,7 @@ import unicodedata
 import re
 import socket
 import string
+import threading
 
 from BeautifulSoup import BeautifulSoup
 
@@ -40,14 +41,13 @@ self_release_pattern = re.compile("Version (.+), ([0-9]+).([0-9])+ MBs")
 req_headers = {
   'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.13 (KHTML, like Gecko) Chrome/0.A.B.C Safari/525.13',
   'Referer': 'http://www.addic7ed.com'}
-    
+
 def get_url(url):
   request = urllib2.Request(url, headers=req_headers)
   opener = urllib2.build_opener()
   response = opener.open(request)
 
-  contents = response.read()
-  return contents
+  return response.read(), response.geturl()
 
 def append_subtitle(item):
   listitem = xbmcgui.ListItem(label=item['lang']['name'],
@@ -75,7 +75,7 @@ def query_Film(name, year, langs, file_original_path):
   filename_string = "%s" %(name.replace("_", ".").title() )
   query(searchurl, langs, file_original_path, filename_string)
 
-def query(searchurl, langs, file_original_path, filename_string):
+def query(searchurl, langs, file_original_path = None):
   sublinks = []
   socket.setdefaulttimeout(20)
   request = urllib2.Request(searchurl, headers=req_headers)
@@ -85,17 +85,19 @@ def query(searchurl, langs, file_original_path, filename_string):
   content = content.replace("The safer, easier way", "The safer, easier way \" />")
   soup = BeautifulSoup(content)
 
-  file_original_path_clean = normalizeString(file_original_path.encode('utf-8'))
-  file_name = str(os.path.basename(file_original_path_clean)).split("-")[-1].lower()
+  if file_original_path is not None:
+    file_original_path_clean = normalizeString(file_original_path.encode('utf-8'))
+    file_name = str(os.path.basename(file_original_path_clean)).split("-")[-1].lower()
+  else:
+    file_name = None
 
   for langs_html in soup("td", {"class" : "language"}):
-
     try:
       subs = langs_html.findPrevious("td", {"class":"NewsTitle", "colspan" : "3"})
       fullLanguage = str(langs_html).split('class="language">')[1].split('<a')[0].replace("\n","")
       subteams = self_release_pattern.match(str(subs.contents[1])).groups()[0]
 
-      if (str(subteams.replace("WEB-DL-", "").lower()).find(str(file_name))) > -1:
+      if file_name is not None and (str(subteams.replace("WEB-DL-", "").lower()).find(str(file_name))) > -1:
         hashed = True
       else:
         hashed = False
@@ -117,7 +119,8 @@ def query(searchurl, langs, file_original_path, filename_string):
         HI = False
 
       if status == "Completed" and (lang['3let'] in langs) :
-        sublinks.append({'rating': '0', 'filename': "%s-%s" %(filename_string, subteams ), 'sync': hashed, 'link': link, 'lang': lang, 'hearing_imp': HI})
+        title = soup.find('span', {'class': 'titulo'}).contents[0].strip(' \t\n\r')
+        sublinks.append({'rating': '0', 'filename': "%s - %s" %(title, subteams ), 'sync': hashed, 'link': link, 'lang': lang, 'hearing_imp': HI})
     except:
       log(__name__, "ERROR IN BS")
       pass
@@ -129,15 +132,24 @@ def query(searchurl, langs, file_original_path, filename_string):
     append_subtitle(s)
 
 def search_manual(searchstr, languages, filename):
-  xbmc.executebuiltin((u'Notification(%s,%s)' % (__scriptname__ , __language__(24000))).encode('utf-8'))
-  return False
-  search_string = prepare_search_string(searchstr)
-  url = self_host + "/search.php?search=" + search_string + '&Submit=Search'
-  content, response_url = geturl(url)
+  url = self_host + "/search.php?search=" + searchstr + '&Submit=Search'
+  content, responseUrl = get_url(url)
 
   if content is not None:
-    return False
-    # getallsubs(content, languages, filename)
+    if not responseUrl.startswith(self_host + "/search.php?"):
+      # A single result has been found
+      query(responseUrl, languages)
+    else:
+      # A table containing several results
+      soup = BeautifulSoup(content)
+      table = soup.find('table', attrs={'class': 'tabel'})
+      if table is not None:
+        links = table.findAll('a')
+        threads = [threading.Thread(target=query, args=(self_host + "/" + link['href'], languages)) for link in links]
+        for t in threads:
+          t.start()
+        for t in threads:
+          t.join()
 
 def search_filename(filename, languages):
   title, year = xbmc.getCleanMovieTitle(filename)
@@ -182,7 +194,7 @@ def download(link):
 
   file = os.path.join(__temp__, "addic7ed.srt")
 
-  f = get_url(link)
+  f, _ = get_url(link)
 
   local_file_handle = open(file, "wb")
   local_file_handle.write(f)
