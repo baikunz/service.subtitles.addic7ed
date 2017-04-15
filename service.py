@@ -64,12 +64,16 @@ def append_subtitle(item):
   xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=listitem, isFolder=False)
 
 def query_TvShow(name, season, episode, langs, file_original_path):
+  if type(season) is not int or type(episode) is not int:
+    return None
   name = addic7ize(name).lower().replace(" ", "_")
   searchurl = "%s/serie/%s/%s/%s/addic7ed" %(self_host, name, season, episode)
   filename_string = "%s.S%.2dE%.2d" %(name.replace("_", ".").title(), int(season), int(episode) )
   query(searchurl, langs, file_original_path, filename_string)
 
 def query_Film(name, year, langs, file_original_path):
+  if type(year) is not int:
+    return None
   name = urllib.quote(name.replace(" ", "_"))
   searchurl = "%s/film/%s_(%s)-Download" %(self_host,name, str(year))
   filename_string = "%s" %(name.replace("_", ".").title() )
