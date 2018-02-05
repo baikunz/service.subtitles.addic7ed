@@ -5,3 +5,5 @@
 # Ignore python files
 *.pyc
 *.pyo
+
+.ropeproject

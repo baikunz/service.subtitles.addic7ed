@@ -67,7 +67,7 @@ def append_subtitle(sub_link):
 
 
 def query_tvshow(name, season, episode, languages, file_original_path):
-    if type(season) is not int or type(episode) is not int:
+    if season.isdigit() is not True or episode.isdigit() is not True:
         return None
     name = addic7ize(name).lower().replace(" ", "_")
     search_url = "%s/serie/%s/%s/%s/addic7ed" % (self_host, name, season, episode)
